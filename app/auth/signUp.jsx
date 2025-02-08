@@ -1,11 +1,40 @@
-import { View, Text, Image, StyleSheet, TextInput, KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity, Pressable } from 'react-native';
-import React from 'react';
+import { View, Text, Image, StyleSheet, TextInput, KeyboardAvoidingView, ScrollView, TouchableOpacity, Pressable } from 'react-native';
+import React, { useState } from 'react';
 import Colors from './../../constant/Colors';
 import { useRouter } from 'expo-router';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth, dp } from '../../Config/firebaseConfig';
+import { doc, setDoc } from 'firebase/firestore';
 
 export default function signUp() {
 const router= useRouter();
-    return (
+const [email,setEmail]=useState();
+const [password,setPassword]=useState();
+const [fullName,setFullName]=useState();
+const  CreateNewAccount=()=>{
+ createUserWithEmailAndPassword(auth,email,password)
+.then(async(resp)=>{
+    const user=resp.user;
+    console.log(user);
+    await SaveUser(user);
+    //Save the user to the database
+})
+.catch(e=>{
+    console.log(e.message);
+})
+}
+const SaveUser=async(user)=>{
+    await setDoc(doc(dp, 'users', email), {
+        name: fullName,
+        email: email,
+        member: false,
+        uid: user?.uid
+    });
+
+ //Nativage to New Screen
+}
+
+return (
         <KeyboardAvoidingView>
             <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
                 <View
@@ -33,9 +62,9 @@ const router= useRouter();
                     >
                         Create New Account
                     </Text>
-                    <TextInput style={styles.textInput} placeholder="Enter Full Name" />
-                    <TextInput style={styles.textInput} placeholder="Enter Email address" />
-                    <TextInput
+                    <TextInput style={styles.textInput} onChangeText={(value)=>setFullName(value)}   placeholder="Enter Full Name" />
+                    <TextInput style={styles.textInput} onChangeText={(value)=>setEmail(value)} placeholder="Enter Email address" />
+                    <TextInput onChangeText={(value)=>setPassword(value)}
                         style={styles.textInput}
                         placeholder="Create Password"
                         secureTextEntry={true}
@@ -47,8 +76,8 @@ const router= useRouter();
                             width:"100%",
                             padding:10,
                             borderRadius:10
-                        }
-                    }>
+                        }}                          
+                        onPress={CreateNewAccount}>
                         <Text style={{
                             fontFamily:'outfit',
                             fontSize:20,

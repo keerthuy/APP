@@ -76,7 +76,7 @@ const router=useRouter();
             </KeyboardAvoidingView>
         );
     }
-    
+
     const styles = StyleSheet.create({
         textInput: {
             borderWidth: 1,
