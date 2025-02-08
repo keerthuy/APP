@@ -5,14 +5,13 @@ import { useRouter } from 'expo-router';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth, dp } from '../../Config/firebaseConfig';
 import { doc, setDoc } from 'firebase/firestore';
-
 export default function signUp() {
 const router= useRouter();
 const [email,setEmail]=useState();
 const [password,setPassword]=useState();
 const [fullName,setFullName]=useState();
 const  CreateNewAccount=()=>{
- createUserWithEmailAndPassword(auth,email,password)
+createUserWithEmailAndPassword(auth,email,password)
 .then(async(resp)=>{
     const user=resp.user;
     console.log(user);
@@ -24,12 +23,18 @@ const  CreateNewAccount=()=>{
 })
 }
 const SaveUser=async(user)=>{
-    await setDoc(doc(dp, 'users', email), {
+    const data={
         name: fullName,
         email: email,
         member: false,
         uid: user?.uid
-    });
+    }
+    await setDoc(doc(dp, 'users', email),data)
+    
+    setUserDetail(data);
+    
+
+
 
  //Nativage to New Screen
 }

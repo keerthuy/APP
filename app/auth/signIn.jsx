@@ -1,10 +1,39 @@
-import { View, Text,StyleSheet,TextInput,TouchableOpacity,KeyboardAvoidingView,ScrollView,Image,Pressable} from 'react-native'
-import React from 'react'
+import { View, Text,StyleSheet,TextInput,TouchableOpacity,KeyboardAvoidingView,ScrollView,Image,Pressable, ToastAndroid, ActivityIndicator} from 'react-native'
+import React, { useContext, useState } from 'react'
 import Colors from '../../constant/Colors';
 import { useRouter } from 'expo-router';
+import {auth, dp} from '../../Config/firebaseConfig'
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import {UserDetailContext} from './../../context/UserDetailContext'
+import { doc, getDoc } from 'firebase/firestore';
 export default function signIn() {
 const router=useRouter();
-  return (
+const [email,setEmail]=useState();
+const [password,setPassword]=useState();
+const {userDetail,setUserDetail}= useContext(UserDetailContext)
+const [loading,setLoading]=useState(false);
+const onSignInClick=()=>{
+    setLoading(true)
+    signInWithEmailAndPassword(auth,email,password)
+       .then(async(resp)=>{
+            const user= resp.user
+            console.log(user)
+           await getUserDetail();
+           setLoading(false);
+       })
+    
+       .catch(e=>{
+        console.log(e)
+        setLoading(false);
+        ToastAndroid.show('Incorrect Email & Password',ToastAndroid.BOTTOM)
+       })
+}
+
+const getUserDetail=async()=>{
+    const result = await getDoc(doc(dp,'users',email));
+    console.log(result.data());
+}
+return (
      <KeyboardAvoidingView>
                 <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
                     <View
@@ -32,9 +61,12 @@ const router=useRouter();
                         >
                             Welcome Back
                         </Text>
-                        <TextInput style={styles.textInput} placeholder="Enter Email Address" />
-                        <TextInput style={styles.textInput} placeholder="Enter the Password" />
-                        <TouchableOpacity style={
+                        <TextInput style={styles.textInput}   onChangeText={(value)=>setEmail(value)} placeholder="Enter Email Address" />
+                        <TextInput style={styles.textInput}  onChangeText={(value)=>setPassword(value)}   placeholder="Enter the Password" />
+                        <TouchableOpacity 
+                        onPress={onSignInClick}
+                        disabled ={loading}
+                        style={
                             {
                                 backgroundColor:Colors.PRIMARY,
                                 marginTop:25,
@@ -43,13 +75,14 @@ const router=useRouter();
                                 borderRadius:10
                             }
                         }>
-                            <Text style={{
+                         {!loading ?  <Text style={{
                                 fontFamily:'outfit',
                                 fontSize:20,
                                 textAlign:'center',
                                 color:Colors.WHITE
         
-                                }}>Sign In</Text>
+                                }}>Sign In</Text>:
+                             <ActivityIndicator size={'large'} color={Colors.WHITE} />}
                         </TouchableOpacity>
                         <View style={
                             {
