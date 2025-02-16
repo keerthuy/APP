@@ -14,13 +14,13 @@ export default function Header() {
     <View>
       <Text
       style={{
-         fontFamily:'outfit-bold',
+         fontFamily:'outfitB old',
          fontSize:24
       }}
       >Hello,{userDetail?.name}</Text>
       <Text
       style={{
-        fontFamily:'outfit',
+        fontFamily:'outfitRegular',
         fontSize:17
       }}
       >
