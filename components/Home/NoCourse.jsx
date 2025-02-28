@@ -1,7 +1,7 @@
 import { View, Text, Image } from 'react-native';
 import React from 'react';
 import { useRouter } from 'expo-router';
-import Button from './Shared/Button';
+import Button from './../Shared/Button';
 
 export default function NoCourse() {
   const router = useRouter(); // Correct usage
